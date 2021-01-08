@@ -1198,11 +1198,11 @@ static int hostapd_ctrl_iface_get_queue_params(struct hostapd_data *hapd,
         int aifs = queue->aifs;
         int tx_cwmin = queue->cwmin;
         int tx_cwmax = queue->cwmax;
-        int burst = queue->burst;
+        float burst = queue->burst;
 
         // return result
         ret = os_snprintf(pos, end - pos,
-                          "Queue=%d : aifs=%d tx_cwmin=%d tx_cwmax=%d burst=%d\n",
+                          "Queue=%d : aifs=%d tx_cwmin=%d tx_cwmax=%d burst=%.1f\n",
                           num, aifs, tx_cwmin, tx_cwmax, burst
                           );
         if (os_snprintf_error(end - pos, ret))
@@ -1217,15 +1217,14 @@ static int hostapd_ctrl_iface_set_queue_params(struct hostapd_data *hapd,
                      char *params, char *buf, size_t buflen)
 {
     // read data
-    int num_queue, aifs, cw_min, cw_max, burst_time;
     char *p = params;
-    num_queue = strtol (p, &p, 10);
-    aifs = strtol (p, &p, 10);
-    cw_min = strtol (p, &p, 10);
-    cw_max = strtol (p, &p, 10);
-    burst_time = strtol (p, &p, 10);
+    int num_queue = strtol (p, &p, 10);
+    int aifs = strtol (p, &p, 10);
+    int cw_min = strtol (p, &p, 10);
+    int cw_max = strtol (p, &p, 10);
+    float burst_time = strtof (p, &p);
 
-    wpa_printf(MSG_INFO, "Set queue %d: aifs %d cw_min %d cw_max %d burst_time %d",
+    wpa_printf(MSG_INFO, "Set queue %d: aifs %d cw_min %d cw_max %d burst_time %.1f",
     			num_queue, aifs, cw_min, cw_max, burst_time);
 
     if (hostapd_set_tx_queue_params(hapd, num_queue, aifs, cw_min, cw_max, burst_time)){
@@ -1262,11 +1261,11 @@ static int hostapd_ctrl_iface_get_wmm_params(struct hostapd_data *hapd,
         int aifs = queue->aifs;
         int tx_cwmin = queue->cwmin;
         int tx_cwmax = queue->cwmax;
-        int txop = queue->txop_limit;
+        float txop = queue->txop_limit;
 
         // return result
         ret = os_snprintf(pos, end - pos,
-                          "Queue=%d : aifs=%d tx_cwmin=%d tx_cwmax=%d txop=%d\n",
+                          "Queue=%d : aifs=%d tx_cwmin=%d tx_cwmax=%d txop=%.1f\n",
                           num, aifs, tx_cwmin, tx_cwmax, txop
                           );
         if (os_snprintf_error(end - pos, ret))
@@ -1280,20 +1279,19 @@ static int hostapd_ctrl_iface_set_wmm_params(struct hostapd_data *hapd,
                      char *params, char *buf, size_t buflen)
 {
     // read data
-    int num_queue, aifs, cw_min, cw_max, txop;
     char *p = params;
-    num_queue = strtol (p, &p, 10);
-    aifs = strtol (p, &p, 10);
-    cw_min = strtol (p, &p, 10);
-    cw_max = strtol (p, &p, 10);
-    txop = strtol (p, &p, 10);
+    int num_queue = strtol (p, &p, 10);
+    int aifs = strtol (p, &p, 10);
+    int cw_min = strtol (p, &p, 10);
+    int cw_max = strtol (p, &p, 10);
+    float txop = strtof (p, &p);
 
     if (num_queue < 0 || num_queue > 3){
     	wpa_printf(MSG_ERROR, "Set wmm queue error: queue %d invalid", num_queue);
     	return -1;
     }
 
-    wpa_printf(MSG_INFO, "Set wmm queue %d: aifs %d cw_min %d cw_max %d txop %d",
+    wpa_printf(MSG_INFO, "Set wmm queue %d: aifs %d cw_min %d cw_max %d txop %.1f",
     			num_queue, aifs, cw_min, cw_max, txop);
 
     struct hostapd_config *conf = hapd->iconf;
